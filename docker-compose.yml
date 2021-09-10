@@ -8,14 +8,14 @@ services:
       - "1883:1883"
     volumes:
       - MQTT_VOLUME:/mosquitto/data            
-  store-mongo:
+  catalog-mongo-db:
     image: mongo:4
     ports:
       - "27018:27017"
     environment: 
         - storageEngine=wiredTiger
     volumes: 
-      - MONGO_VOLUME:/data/db
+      - CATALOG_MONGO_VOLUME:/data/db
 volumes: 
   MQTT_VOLUME:
-  MONGO_VOLUME:
+  CATALOG_MONGO_VOLUME:
