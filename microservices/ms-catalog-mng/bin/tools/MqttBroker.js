@@ -1,7 +1,7 @@
 'use strict';
 
 const MQTT = require('async-mqtt');
-const Rx = require('rxjs');
+const { defer, from, BehaviorSubject, of } = require('rxjs');
 const uuidv4 = require('uuid/v4');
 
 const {
@@ -30,9 +30,10 @@ class MqttBroker {
         /**
          * Rx Subject for incoming messages
          */
-        this.incomingMessages$ = new Rx.BehaviorSubject();
+        this.incomingMessages$ = new BehaviorSubject();
 
         this.listeningTopics = ['requests', 'events'];
+        this.repliesTopic = "responses";
 
         this.mqttClient = MQTT.connect(this.mqttServerUrl, {
             host: this.mqttServerUrl,
@@ -66,13 +67,25 @@ class MqttBroker {
     }
 
     configMessageListener$(topics) {
-        return Rx.from(topics).pipe(
+        return from(topics).pipe(
             mergeMap(topic =>
-                Rx.defer(() => this.mqttClient.subscribe(topic)).pipe(
+                defer(() => this.mqttClient.subscribe(topic)).pipe(
                     tap(() => console.log(`Subscrito a ${topic}`))
                 )
             )
         )
+    }
+
+    sendReply$(data) {
+
+        const responseAsString = JSON.stringify(data);
+
+        return of(null).pipe(
+            mergeMap(() => defer(() => this.mqttClient.publish(this.repliesTopic, responseAsString, { qos: 0 })))
+
+        )
+
+
     }
 
 

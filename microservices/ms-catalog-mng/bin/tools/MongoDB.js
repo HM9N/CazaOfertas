@@ -33,6 +33,9 @@ class MongoDB {
 
 module.exports = {
     MongoDB,
+    /**
+     * @returns MongoDB
+     */
     singleton: () => {
         if (!instance) {
             instance = new MongoDB({ url: 'mongodb://localhost:27018', dbName: 'test' })
