@@ -1,0 +1,15 @@
+"Consultas de la información de los precios. Solo lectura"
+type Query {
+    "Lista de los estudiantes de la academia"
+    prices: [Price!]!
+}
+
+"Información de los precios"
+type Price {
+    "identificativo del precio"
+    id: ID!
+    "Nombre del producto"
+    product: String!
+    "Precio del producto"
+    email: Int!
+}
