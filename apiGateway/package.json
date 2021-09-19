@@ -24,7 +24,10 @@
     "http": "0.0.0",
     "lodash": "^4.17.11",
     "ncp": "^2.0.0",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.2",
+    "rxjs": "^6.3.3",
+    "uuid": "^3.2.1",
+    "mqtt": "^4.0.0"
   },
   "devDependencies": {
     "@types/compression": "0.0.36",
