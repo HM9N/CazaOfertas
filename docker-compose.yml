@@ -16,6 +16,37 @@ services:
         - storageEngine=wiredTiger
     volumes: 
       - CATALOG_MONGO_VOLUME:/data/db
+
+  # offer-mongo-db:
+  #   image: mongo:4
+  #   ports:
+  #     - "27019:27017"
+  #   environment: 
+  #       - storageEngine=wiredTiger
+  #   volumes: 
+  #     - OFFER_MONGO_VOLUME:/data/db
+
+  # auth-mongo-db:
+  #   image: mongo:4
+  #   ports:
+  #     - "27020:27017"
+  #   environment: 
+  #       - storageEngine=wiredTiger
+  #   volumes: 
+  #     - AUTH_MONGO_VOLUME:/data/db
+
+  # store-mongo-db:
+  #   image: mongo:4
+  #   ports:
+  #     - "27021:27017"
+  #   environment: 
+  #       - storageEngine=wiredTiger
+  #   volumes: 
+  #     - STORE_MONGO_VOLUME:/data/db
+
 volumes: 
   MQTT_VOLUME:
   CATALOG_MONGO_VOLUME:
+  # OFFER_MONGO_VOLUME:
+  # AUTH_MONGO_VOLUME:
+  # STORE_MONGO_VOLUME:
