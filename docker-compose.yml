@@ -8,6 +8,12 @@ services:
       - "1883:1883"
     volumes:
       - MQTT_VOLUME:/mosquitto/data            
+
+  api-gateway:
+    build: ./apiGateway
+    ports:
+      - "5200:5200"
+
   catalog-mongo-db:
     image: mongo:4
     ports:
