@@ -45,7 +45,7 @@ class MqttBroker {
             protocolVersion: 4
         });
 
-        this.mqttClient.on('connect', () => console.log(`Mqtt client connected`));
+        this.mqttClient.on('connect', () => console.log(` ------- Mqtt client connected ----------`));
 
         this.mqttClient.on('message', (topic, message) => {
             const parsedMsg = JSON.parse(message);

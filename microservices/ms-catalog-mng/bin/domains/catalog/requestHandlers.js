@@ -1,4 +1,4 @@
-const { of, filter, tap, mergeMap, defer, map } = require("rxjs");
+const { of, filter, tap, mergeMap, defer, map, forkJoin } = require("rxjs");
 const MqttBroker = require("../../tools/MqttBroker");
 
 /**
@@ -12,23 +12,44 @@ const mqttBroker = require("../../services/mqtt.service")();
 const mongoInstance = require("../../services/mongo.service").mongoDB;
 let instance;
 
-
+const DOMAIN_KEY = 'CATALOG';
 
 class RequestHandlerCatalogDomain {
 
     start$() {
-        return mqttBroker.incomingMessages$.pipe(
-            filter(m => m),
-            filter(msg => msg.data && msg.data.domain === 'CATALOG'),
-            tap(msg => {
-                console.log('mensaje recibido por el dominio de catalog (-.-)');
-            }),
-            mergeMap(() => {
-                return this.getObjectTest$()
-            }),
-            mergeMap(response => {
+        return this.listenMessagesFormDomain$().pipe(
+            mergeMap((mqttMsg) => {
 
-                return mqttBroker.sendReply$({ requestId: "123-23wew", data: response })
+                let methodResolver$ = of(null);
+
+                switch (mqttMsg.body.requestType) {
+                    case 'auth':
+                        methodResolver$ = this.getObjectTest$();
+                        break;
+                    case 'other-case':
+                        const { pass, userName } = mqttMsg.body;
+                        methodResolver$ = this.getObjectTest_other_case$(pass, userName);
+                        break;
+                    default:
+                        methodResolver$ = of(null);
+                }
+
+                return forkJoin([
+                    of(mqttMsg),
+                    methodResolver$
+                ])
+
+            }),
+            mergeMap(([mqttMsg, mongoData]) => {
+
+                const { requestId, requestType } = mqttMsg;
+
+                console.log({ mqttMsg, mongoData });
+
+                return mqttBroker.sendReply$({
+                    requestId,
+                    data: mongoData
+                })
 
             })
         )
@@ -36,18 +57,40 @@ class RequestHandlerCatalogDomain {
     }
 
 
+    // get all products.....
     getObjectTest$() {
         // this.client.db(this.dbName)
-        const collection = mongoInstance.client.db("testing").collection("courses");
-        const query = {};
+        const collection = mongoInstance.client
+            .db("ms-catalog-mng")
+            .collection("catalogs");
+        const query = { "_id": "1238y1273y12s31_" };
         return defer(() => collection.findOne(query)).pipe(
-            map(res => {
-                return { timestamp: Date.now(), ...res }
-            })
+            map(doc => (doc || {}).offers || [])
         )
 
     }
 
+    // get product wit discpunt
+    getObjectTest_other_case$(pass, userName) {
+        // this.client.db(this.dbName)
+        const collection = mongoInstance.client
+            .db("ms-catalog-mng")
+            .collection("catalogs");
+        const query = { "_id": "1238y1273y12s31" };
+        return defer(() => collection.findOne(query)).pipe(
+            map(doc => (doc || {}).offers || [])
+        )
+
+    }
+
+    listenMessagesFormDomain$() {
+
+        return mqttBroker.incomingMessages$.pipe(
+            filter(m => m),
+            filter(msg => msg.data && msg.data.body && msg.data.body.domain === DOMAIN_KEY),
+            map(msg => msg.data),
+        );
+    }
 
 
 }
