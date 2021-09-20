@@ -12,7 +12,7 @@ const query: IResolvers = {
             const requestBody = {
                 requestId: uuidV4(),
                 body: {
-                    domain: 'user',
+                    domain: 'CATALOG',
                     requestType: 'auth', // reset-password | operation1, operaion-n | .....
                     body: {
                         pass: '3425f344',
@@ -21,8 +21,8 @@ const query: IResolvers = {
                 },
             }
             return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
-                // map((mqttMsg) => mqttMsg.data)
-                map((mqttMsg) => database.prices)
+                map((mqttMsg) => mqttMsg.data)
+                // map((mqttMsg) => database.prices)
             ).toPromise()
 
         }
