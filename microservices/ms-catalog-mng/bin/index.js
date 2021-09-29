@@ -1,12 +1,12 @@
-const { concat, of } = require("rxjs");
+const { concat, of, tap } = require("rxjs");
 const MqttBroker = require("./tools/MqttBroker");
+
 /** @type MqttBroker */
 const mqttInstance = require('./services/mqtt.service')();
 const Mongo = require("./services/mongo.service");
 const domains = require("./services/domains.service");
 
 concat(
-    of(null),
     // empezar conexion con mqtt
     mqttInstance.configMessageListener$(['requests']),
     // empezar conexcion con Mongo

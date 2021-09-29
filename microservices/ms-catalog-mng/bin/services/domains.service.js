@@ -1,16 +1,12 @@
 "use strict"
 
 const { concat } = require("rxjs");
-/**
- * @type RequestHandlerCatalogDomain
- */
-const catalogDomain = require("../domains/catalog/requestHandlers").getInstance();
 
-// const domains = [catalogDomain]
-
+// const catalogDomain = require("../domains/catalog/requestHandlers").getInstance();
+const domains = require('../domains');
 
 module.exports = {
     start$: concat(
-        catalogDomain.start$()
+        domains.start$
     )
 }
