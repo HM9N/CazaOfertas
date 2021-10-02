@@ -1,5 +1,6 @@
-const { of, filter, tap, mergeMap, defer, map, forkJoin } = require("rxjs");
+const { of, filter, tap, mergeMap, defer, map, forkJoin, concat, skip } = require("rxjs");
 const MqttBroker = require("../../tools/MqttBroker");
+const { CatalogDA } = require("./CatalogDA");
 
 /**
  * @type MqttBroker
@@ -10,26 +11,47 @@ const mqttBroker = require("../../services/mqtt.service")();
  * @type MongoDB
  */
 const mongoInstance = require("../../services/mongo.service").mongoDB;
+// const 
+
 let instance;
 
-const DOMAIN_KEY = 'CATALOG';
+const DOMAIN_KEYS = ['CATALOG', 'USERS'];
+
 
 class RequestHandlerCatalogDomain {
 
     start$() {
+        return this.configureMqttListener$()
+    }
+
+    configureMqttListener$() {
+
         return this.listenMessagesFormDomain$().pipe(
             mergeMap((mqttMsg) => {
 
-                let methodResolver$ = of(null);
+                let methodResolver$ = () => of(null);
 
                 switch (mqttMsg.body.requestType) {
+
                     case 'auth':
                         methodResolver$ = this.getObjectTest$();
                         break;
+
                     case 'other-case':
                         const { pass, userName } = mqttMsg.body;
                         methodResolver$ = this.getObjectTest_other_case$(pass, userName);
                         break;
+
+                    case 'CREATE_PRODUCT':
+                        const { product } = mqttMsg.body.args;
+                        methodResolver$ = this.createProduct$(product);
+                        break;
+
+                    // case 'UPDATE_USER':
+                    //     const { product } = mqttMsg.body.args;
+                    //     methodResolver$ = this.createProduct$(product);
+                    //     break;
+
                     default:
                         methodResolver$ = of(null);
                 }
@@ -51,11 +73,12 @@ class RequestHandlerCatalogDomain {
                     data: mongoData
                 })
 
+            }),
+            tap(() => {
+                console.log('[3] configurando listener de catalog')
             })
         )
-
     }
-
 
     // get all products.....
     getObjectTest$() {
@@ -67,7 +90,6 @@ class RequestHandlerCatalogDomain {
         return defer(() => collection.findOne(query)).pipe(
             map(doc => (doc || {}).offers || [])
         )
-
     }
 
     // get product wit discpunt
@@ -76,6 +98,7 @@ class RequestHandlerCatalogDomain {
         const collection = mongoInstance.client
             .db("ms-catalog-mng")
             .collection("catalogs");
+
         const query = { "_id": "1238y1273y12s31" };
         return defer(() => collection.findOne(query)).pipe(
             map(doc => (doc || {}).offers || [])
@@ -83,14 +106,88 @@ class RequestHandlerCatalogDomain {
 
     }
 
+    createProduct$(product) {
+        const collection = this.getCollection("ms-catalog-mng", "product");
+        return defer(() => collection.insertOne(product)).pipe(
+            tap(r => console.log({ r }))
+        )
+    }
+
+    /**
+     * REMOVE A PRODUCT
+     */
+    deleteProduct$(productId) {
+
+        const collection = this.getCollection("ms-catalog-mng", "product");
+        return defer(() => collection.deleteOne({ _id: productId })).pipe(
+            tap(r => console.log({ r }))
+        )
+    }
+
+    updateProduct$(product) {
+        const { id } = product;
+        const collection = this.getCollection("ms-catalog-mng", "product");
+
+        const query = { _id: id };
+        const update = { $set: { ...product } }
+
+        return defer(() => collection.updateOne(query, update)).pipe(
+            tap(r => console.log({ r }))
+        )
+    }
+
+
+    updateProductState$(productId, newState) {
+        const collection = this.getCollection("ms-catalog-mng", "product");
+
+        const query = { _id: productId };
+        const update = { $set: { state: newState } }
+
+        return defer(() => collection.updateOne(query, update)).pipe(
+            tap(r => console.log({ r }))
+        )
+    }
+
+
+    // arroz, 0, 10
+    listProducts$(keyword, pagination, jwt) {
+
+        const collection = this.getCollection("ms-catalog-mng", "product");
+
+        const query = {};
+        const { page, size } = pagination;
+
+        query['name'] = { $regex: keyword, $options: 'i' };
+        query['state'] = 'active';
+        query['owner'] = jwt.userName;
+
+        return defer(() => collection
+            .find(query, { projection: { price: 1, name: 1, category: 1 } })
+            .skip(page * size)
+            .limit(size)
+            .toArray()
+        );
+
+    }
+
+
+
     listenMessagesFormDomain$() {
 
         return mqttBroker.incomingMessages$.pipe(
             filter(m => m),
-            filter(msg => msg.data && msg.data.body && msg.data.body.domain === DOMAIN_KEY),
+            filter(msg => msg.data && msg.data.body && DOMAIN_KEYS.includes(msg.data.body.domain)),
             map(msg => msg.data),
+            tap(m => console.log({ MSG: m })),
         );
     }
+
+    getCollection(dbName, collectionName) {
+        mongoInstance.client
+            .db(dbName)
+            .collection(collectionName)
+    }
+
 
 
 }
@@ -98,10 +195,11 @@ class RequestHandlerCatalogDomain {
 module.exports = {
     /**
      * 
-     * @returns RequestHandlerCatalogDomain
+     * @returns {RequestHandlerCatalogDomain}
      */
     getInstance: () => {
         if (!instance) {
+            console.log('instance = new RequestHandlerCatalogDomain();');
             instance = new RequestHandlerCatalogDomain();
         }
         return instance

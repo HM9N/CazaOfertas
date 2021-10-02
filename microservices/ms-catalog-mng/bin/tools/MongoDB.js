@@ -1,6 +1,6 @@
 "use strict";
 
-const { bindNodeCallback, Observable } = require("rxjs");
+const { bindNodeCallback } = require("rxjs");
 const { map } = require("rxjs/operators");
 const MongoClient = require("mongodb").MongoClient;
 
@@ -22,9 +22,9 @@ class MongoDB {
                 reconnectInterval: 250
             }).pipe(
                 map(client => {
-                    console.log('CONECTADO A MONGO');
                     this.client = client;
                     this.db = this.client.db(this.dbName);
+                    console.log('[2] ---------------- CONECTADO A MONGO -----------------------');
                     return `MongoDB connected to dbName= ${this.dbName}`;
                 })
             );
@@ -34,7 +34,7 @@ class MongoDB {
 module.exports = {
     MongoDB,
     /**
-     * @returns MongoDB
+     * @returns {MongoDB}
      */
     singleton: () => {
         if (!instance) {
