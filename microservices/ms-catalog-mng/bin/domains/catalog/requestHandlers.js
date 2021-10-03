@@ -109,7 +109,8 @@ class RequestHandlerCatalogDomain {
     createProduct$(product) {
         const collection = this.getCollection("ms-catalog-mng", "product");
         return defer(() => collection.insertOne(product)).pipe(
-            tap(r => console.log({ r }))
+            map(r => r.result),
+            tap(data => console.log({ data }))
         )
     }
 
@@ -183,7 +184,7 @@ class RequestHandlerCatalogDomain {
     }
 
     getCollection(dbName, collectionName) {
-        mongoInstance.client
+        return mongoInstance.client
             .db(dbName)
             .collection(collectionName)
     }
