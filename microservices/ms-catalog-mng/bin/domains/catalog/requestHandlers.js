@@ -1,6 +1,6 @@
 const { of, filter, tap, mergeMap, defer, map, forkJoin, concat, skip } = require("rxjs");
 const MqttBroker = require("../../tools/MqttBroker");
-const { CatalogDA } = require("./CatalogDA");
+const {      } = require("./CatalogDA");
 
 /**
  * @type MqttBroker
@@ -15,10 +15,10 @@ const mongoInstance = require("../../services/mongo.service").mongoDB;
 
 let instance;
 
-const DOMAIN_KEYS = ['CATALOG', 'USERS'];
+const DOMAIN_KEYS = ['CATALOG'];
 
 
-class RequestHandlerCatalogDomain {
+class RequestHandlerCatalogDomain { 
 
     start$() {
         return this.configureMqttListener$()

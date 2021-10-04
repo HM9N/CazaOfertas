@@ -48,6 +48,7 @@ class MqttBroker {
         this.mqttClient.on('connect', () => console.log(` ------- Mqtt client connected ----------`));
 
         this.mqttClient.on('message', (topic, message) => {
+            console.log("jejejejeje");
             const parsedMsg = JSON.parse(message);
             console.log(JSON.stringify(parsedMsg));
             this.incomingMessages$.next({
