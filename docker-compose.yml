@@ -46,7 +46,7 @@ services:
     container_name: grafana
     restart: unless-stopped
     volumes:
-    - grafana-data:/var/lib/grafana
+    - GRAFANA_DATA:/var/lib/grafana
     ports:
     - 3000:3000
 
@@ -56,7 +56,7 @@ services:
     restart: unless-stopped
     volumes:
     - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    - prometheus-data:/prometheus
+    - PROMETHEUS_DATA:/prometheus
     ports:
     - 9090:9090
     command:
@@ -76,7 +76,7 @@ services:
     - '--path.rootfs=/host'
     pid: host
     volumes:
-    - '/:/host:ro,rslave'
+    - ./NODE_EXPORTER:/host
         
 volumes: 
   MQTT_VOLUME:
@@ -84,5 +84,6 @@ volumes:
   OFFER_MONGO_VOLUME:
   # AUTH_MONGO_VOLUME:
   STORE_MONGO_VOLUME:
-  grafana-data:
-  prometheus-data:    
+  GRAFANA_DATA:
+  PROMETHEUS_DATA:
+  NODE_EXPORTER:
