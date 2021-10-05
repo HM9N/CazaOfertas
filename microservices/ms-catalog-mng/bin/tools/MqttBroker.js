@@ -4,17 +4,7 @@ const MQTT = require('async-mqtt');
 const { defer, from, BehaviorSubject, of } = require('rxjs');
 const uuidv4 = require('uuid/v4');
 
-const {
-    switchMap,
-    filter,
-    map,
-    timeout,
-    first,
-    mapTo,
-    mergeMap,
-    reduce,
-    tap
-} = require('rxjs/operators');
+const { mergeMap, tap } = require('rxjs/operators');
 
 class MqttBroker {
 
@@ -48,9 +38,8 @@ class MqttBroker {
         this.mqttClient.on('connect', () => console.log(` ------- Mqtt client connected ----------`));
 
         this.mqttClient.on('message', (topic, message) => {
-            console.log("jejejejeje");
             const parsedMsg = JSON.parse(message);
-            console.log(JSON.stringify(parsedMsg));
+            // console.log(JSON.stringify(parsedMsg));
             this.incomingMessages$.next({
                 id: parsedMsg.id,
                 data: parsedMsg,

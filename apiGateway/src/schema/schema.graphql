@@ -1,15 +1,26 @@
-"Consultas de la información de los precios. Solo lectura"
-type Query {
-    "Lista de los estudiantes de la academia"
-    prices: [Price!]!
-}
+
 
 "Información de los precios"
 type Price {
     "identificativo del precio"
-    id: ID!
+    id: ID
     "Nombre del producto"
-    product: String!
+    product: String
     "Precio del producto"
-    email: Int!
+    email: Int
 }
+
+type CustomPrice{
+    name: String
+    size: Int
+    encoding: String
+}
+
+"Consultas de la información de los precios. Solo lectura"
+type Query {
+    "Lista de los estudiantes de la academia"
+    prices: [Price],
+    pricesWithArgs(id: String, keyword: String, limit: Int): [CustomPrice],
+    products(catalogId: String): String
+}
+

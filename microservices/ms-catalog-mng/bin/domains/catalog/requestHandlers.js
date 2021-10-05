@@ -1,6 +1,6 @@
 const { of, filter, tap, mergeMap, defer, map, forkJoin, concat, skip } = require("rxjs");
 const MqttBroker = require("../../tools/MqttBroker");
-const {      } = require("./CatalogDA");
+const { } = require("./CatalogDA");
 
 /**
  * @type MqttBroker
@@ -18,7 +18,7 @@ let instance;
 const DOMAIN_KEYS = ['CATALOG'];
 
 
-class RequestHandlerCatalogDomain { 
+class RequestHandlerCatalogDomain {
 
     start$() {
         return this.configureMqttListener$()
@@ -31,7 +31,11 @@ class RequestHandlerCatalogDomain {
 
                 let methodResolver$ = () => of(null);
 
-                switch (mqttMsg.body.requestType) {
+                const queryArgs = (mqttMsg.body || {}).args || {};
+                // console.log(mqttMsg.body);
+
+                // queryType - is like an query identifier 
+                switch (mqttMsg.body.queryType) {
 
                     case 'auth':
                         methodResolver$ = this.getObjectTest$();
@@ -43,14 +47,15 @@ class RequestHandlerCatalogDomain {
                         break;
 
                     case 'CREATE_PRODUCT':
-                        const { product } = mqttMsg.body.args;
+                        const { product } = queryArgs;
                         methodResolver$ = this.createProduct$(product);
                         break;
 
-                    // case 'UPDATE_USER':
-                    //     const { product } = mqttMsg.body.args;
-                    //     methodResolver$ = this.createProduct$(product);
-                    //     break;
+                    case 'MS-CATALOG-MNG_QUERY_GET-PRICES-TEST-FN-WITH-ARGS':
+
+                        methodResolver$ = this.findPricesWithArgs$(queryArgs);
+                        break;
+
 
                     default:
                         methodResolver$ = of(null);
@@ -62,21 +67,18 @@ class RequestHandlerCatalogDomain {
                 ])
 
             }),
-            mergeMap(([mqttMsg, mongoData]) => {
+            mergeMap(([mqttMsg, result]) => {
 
                 const { requestId, requestType } = mqttMsg;
 
-                console.log({ mqttMsg, mongoData });
+                console.log({ mqttMsg, result });
 
                 return mqttBroker.sendReply$({
                     requestId,
-                    data: mongoData
+                    data: result
                 })
 
             }),
-            tap(() => {
-                console.log('[3] configurando listener de catalog')
-            })
         )
     }
 
@@ -110,8 +112,25 @@ class RequestHandlerCatalogDomain {
         const collection = this.getCollection("ms-catalog-mng", "product");
         return defer(() => collection.insertOne(product)).pipe(
             map(r => r.result),
-            tap(data => console.log({ data }))
+            // tap(data => console.log({ data }))
         )
+    }
+
+    findPricesWithArgs$(args) {
+
+        return of([
+            {
+                name: `HOLA TIEMPO 1${Date.now()}`,
+                size: Math.floor(Math.random() * 100),
+                encoding: JSON.stringify(args)
+            },
+            {
+                name: `HOLA TIEMPO 2 ${Date.now()}`,
+                size: Math.floor(Math.random() * 100),
+                encoding: JSON.stringify(args)
+            }
+        ])
+
     }
 
     /**
@@ -121,7 +140,7 @@ class RequestHandlerCatalogDomain {
 
         const collection = this.getCollection("ms-catalog-mng", "product");
         return defer(() => collection.deleteOne({ _id: productId })).pipe(
-            tap(r => console.log({ r }))
+            // tap(r => console.log({ r }))
         )
     }
 
@@ -133,7 +152,7 @@ class RequestHandlerCatalogDomain {
         const update = { $set: { ...product } }
 
         return defer(() => collection.updateOne(query, update)).pipe(
-            tap(r => console.log({ r }))
+            // tap(r => console.log({ r }))
         )
     }
 
@@ -145,7 +164,7 @@ class RequestHandlerCatalogDomain {
         const update = { $set: { state: newState } }
 
         return defer(() => collection.updateOne(query, update)).pipe(
-            tap(r => console.log({ r }))
+            // tap(r => console.log({ r }))
         )
     }
 
@@ -179,7 +198,7 @@ class RequestHandlerCatalogDomain {
             filter(m => m),
             filter(msg => msg.data && msg.data.body && DOMAIN_KEYS.includes(msg.data.body.domain)),
             map(msg => msg.data),
-            tap(m => console.log({ MSG: m })),
+            // tap(m => console.log({ MSG: m })),
         );
     }
 
