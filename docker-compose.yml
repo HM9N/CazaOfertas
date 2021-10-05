@@ -6,80 +6,120 @@ services:
     ports:
       - "9002:9001"
       - "1883:1883"
+    hostname: 'broker-mqtt'
     volumes:
       - MQTT_VOLUME:/mosquitto/data 
+    networks:
+      infranet:
+        aliases:
+        - 'broker-mqtt-service'
 
   api-gateway:
-    build: ./apiGateway
-    # image: apigateway:3.0
-    # ports:
-    #   - "5200:5200"
+    build: ./apiGateway 
+    ports:
+      - "5200:5200"
+    hostname: "api-gateway"
     depends_on:
       - "broker-mqtt"
-    network_mode: host
+    networks:
+      infranet:
+        aliases:
+        - 'api-gateway-service'
 
   catalog-mongo-db:
     image: mongo:4
     ports:
       - "27018:27017"
+    hostname: "catalog-mongo-db-service"
     environment: 
-        - storageEngine=wiredTiger
+      - storageEngine=wiredTiger
     volumes: 
       - CATALOG_MONGO_VOLUME:/data/db
+    networks:
+      infranet:
+        aliases:
+        - 'catalog-mongo-db-service'
 
   offer-mongo-db:
     image: mongo:4
     ports:
       - "27019:27017"
+    hostname: "offer-mongo-db-service"
     environment: 
       - storageEngine=wiredTiger
     volumes: 
       - OFFER_MONGO_VOLUME:/data/db
+    networks:
+      infranet:
+        aliases:
+        - 'offer-mongo-db-service'
 
   store-mongo-db:
     image: mongo:4
     ports:
       - "27020:27017"
+    hostname: "store-mongo-db-service"
     environment: 
       - storageEngine=wiredTiger
     volumes: 
       - STORE_MONGO_VOLUME:/data/db   
+    networks:
+      infranet:
+        aliases:
+        - 'store-mongo-db-service'
 
   grafana:
     image: grafana/grafana:8.0.6
     container_name: grafana
     restart: unless-stopped
     volumes:
-    - GRAFANA_DATA:/var/lib/grafana
+      - GRAFANA_DATA:/var/lib/grafana
     ports:
-    - 3000:3000
+      - 3000:3000
+    hostname: grafana
+    networks:
+      infranet:
+        aliases:
+          - 'grafana-service'
 
   prometheus:
     image: prom/prometheus:v2.28.1
     container_name: prometheus
     restart: unless-stopped
     volumes:
-    - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    - PROMETHEUS_DATA:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - PROMETHEUS_DATA:/prometheus
     ports:
-    - 9090:9090
+      - 9090:9090
+    hostname: prometheus
+    networks:
+      infranet:
+        aliases:
+        - 'prometheus-service'
     command:
-    - '--config.file=/etc/prometheus/prometheus.yml'
-    - '--storage.tsdb.path=/prometheus'
-    - '--storage.tsdb.retention.time=1y'
-    - '--web.enable-lifecycle'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=1y'
+      - '--web.enable-lifecycle'
   
   node_exporter:
     image: quay.io/prometheus/node-exporter:latest
     container_name: node_exporter
     restart: unless-stopped
     ports:
-    - 9100:9100
+      - 9100:9100
+    hostname: node-exporter 
     command:
-    - '--path.rootfs=/host'
+      - '--path.rootfs=/host'
     pid: host
     volumes:
-    - ./NODE_EXPORTER:/host
+      - ./NODE_EXPORTER:/host
+    networks:
+      infranet:
+        aliases:
+        - 'node-exporter-service'
+networks:
+  infranet:
 
 volumes: 
   MQTT_VOLUME:
