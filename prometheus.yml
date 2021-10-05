@@ -13,5 +13,5 @@ scrape_configs:
 
   - job_name: 'graphQL'
     static_configs:
-    - targets: ['172.27.176.65:5200']    
+    - targets: ['api-gateway:5200']    
    # metrics_path: '/metrics'

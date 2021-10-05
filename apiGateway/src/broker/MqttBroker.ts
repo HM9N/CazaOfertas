@@ -175,7 +175,7 @@ export function getInstance() {
         const portEnv: string = process.env.DEVICE_BROKER_PORT || '';
         instance = new MqttBroker(
             {
-                url: 'localhost', //process.env.DEVICE_BROKER_URL,
+                url: 'localhost', // process.env.BROKER_URL,
                 port: 1883, // parseInt(portEnv, 10),
                 user: process.env.DEVICE_BROKER_USENAME,
                 password: process.env.DEVICE_BROKER_PASSWORD,

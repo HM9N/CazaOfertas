@@ -7,12 +7,16 @@ services:
       - "9002:9001"
       - "1883:1883"
     volumes:
-      - MQTT_VOLUME:/mosquitto/data            
+      - MQTT_VOLUME:/mosquitto/data 
 
-  # api-gateway:
-  #   build: ./apiGateway
-  #   ports:
-  #     - "5200:5200"
+  api-gateway:
+    build: ./apiGateway
+    # image: apigateway:3.0
+    # ports:
+    #   - "5200:5200"
+    depends_on:
+      - "broker-mqtt"
+    network_mode: host
 
   catalog-mongo-db:
     image: mongo:4
@@ -65,7 +69,6 @@ services:
     - '--storage.tsdb.retention.time=1y'
     - '--web.enable-lifecycle'
   
-
   node_exporter:
     image: quay.io/prometheus/node-exporter:latest
     container_name: node_exporter
@@ -77,7 +80,7 @@ services:
     pid: host
     volumes:
     - ./NODE_EXPORTER:/host
-        
+
 volumes: 
   MQTT_VOLUME:
   CATALOG_MONGO_VOLUME:
