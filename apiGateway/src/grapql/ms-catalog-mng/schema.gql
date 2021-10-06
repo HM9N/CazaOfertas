@@ -16,11 +16,21 @@ type CustomPrice{
     encoding: String
 }
 
+input UserInput{
+    name: String
+    age: Int
+    car: String
+}
+
 "Consultas de la información de los precios. Solo lectura"
 type Query {
     "Lista de los estudiantes de la academia"
     msCatalogSearchCatalogByStoreId(storeId: String!): Catalog,
     pricesWithArgs(id: String, keyword: String, limit: Int): [CustomPrice],
     products(catalogId: String): String
+}
+
+type Mutation{
+    mutationTest(user: UserInput ): MutationResult
 }
 

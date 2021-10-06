@@ -2,6 +2,7 @@ import { IResolvers } from 'graphql-tools';
 import mqttInstance from '../../broker';
 import { map } from 'rxjs/operators';
 import { buildRequestForMqtt } from '../common/MqttRequestType';
+import { of } from 'rxjs';
 
 
 const query: IResolvers = {
@@ -18,6 +19,14 @@ const query: IResolvers = {
                 .toPromise()
 
         },
+    },
+    Mutation: {
+        mutationTest(root, args, context) {
+            return of({
+                code: 200,
+                result: JSON.stringify(args)
+            }).toPromise()
+        }
     }
 }
 
