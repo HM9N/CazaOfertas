@@ -6,18 +6,16 @@ export interface MqttRequest {
     body: {
         domain: string;
         requestType: string;
-        queryType: string;
         args: any
     }
 }
 
-export function buildRequestForMqtt(domain: string, requestType: string, queryType: string, args: any): MqttRequest {
+export function buildRequestForMqtt(domain: string, requestType: string, args: any): MqttRequest {
     return ({
         requestId: uuidV4(),
         body: {
             domain,
             requestType,
-            queryType,
             args
         }
 
