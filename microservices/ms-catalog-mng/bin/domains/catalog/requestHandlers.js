@@ -1,6 +1,7 @@
 const { of, filter, tap, mergeMap, defer, map, forkJoin, concat, skip } = require("rxjs");
 const MqttBroker = require("../../tools/MqttBroker");
-const { } = require("./CatalogDA");
+
+const uuidV4 = require('uuid/v4');
 
 /**
  * @type MqttBroker
@@ -8,14 +9,14 @@ const { } = require("./CatalogDA");
 const mqttBroker = require("../../services/mqtt.service")();
 
 /**
- * @type MongoDB
+ * @type {MongoDB}
  */
 const mongoInstance = require("../../services/mongo.service").mongoDB;
 // const 
 
 let instance;
 
-const DOMAIN_KEYS = ['CATALOG'];
+const DOMAIN_KEYS = ['CATALOG', 'CAR'];
 
 
 class RequestHandlerCatalogDomain {
@@ -32,10 +33,13 @@ class RequestHandlerCatalogDomain {
                 let methodResolver$ = () => of(null);
 
                 const queryArgs = (mqttMsg.body || {}).args || {};
-               // console.log(mqttMsg.body);
-                //console.log(mqttMsg.body.requestType);
+                // console.log(mqttMsg.body);
                 // queryType - is like an query identifier 
                 switch (mqttMsg.body.requestType) {
+
+                    case 'auth':
+                        methodResolver$ = this.getObjectTest$();
+                        break;
 
                     case 'other-case':
                         const { pass, userName } = mqttMsg.body;
@@ -52,8 +56,12 @@ class RequestHandlerCatalogDomain {
                         methodResolver$ = this.findPricesWithArgs$(queryArgs);
                         break;
 
-                    case 'MS-CATALOG-MNG_QUERY_SEARCH_PRODUCT':
-                        methodResolver$ = this.searchProduct$(queryArgs.keyword);
+                    case 'MS-TEST-CREATE-CAR':
+                        methodResolver$ = this.testCreateCar$(queryArgs);
+                        break;
+
+                    case 'MS-CATALOG-MNG_FIND_ONE_CAR_BY_ID':
+                        methodResolver$ = this.testFindOneCar$(queryArgs);
                         break;
 
                     case 'MS-CATALOG-MNG_MUTATION_EDIT_PRODUCT':
@@ -73,7 +81,7 @@ class RequestHandlerCatalogDomain {
             }),
             mergeMap(([mqttMsg, result]) => {
 
-                const { requestId, requestType } = mqttMsg;
+                const { requestId } = mqttMsg;
 
                // console.log({ mqttMsg, result });
 
@@ -106,6 +114,41 @@ class RequestHandlerCatalogDomain {
         return defer(() => collection.findOne(query)).pipe(
             map(doc => (doc || {}).offers || [])
         )
+    }
+
+    /**
+     * EXAMPLE
+     * @param {*} args 
+     * @returns 
+     */
+    testCreateCar$(args) {
+        const collection = this.getCollection("ms-cars-mng", "cars");
+
+        // build object to insert
+        const carToInsert = {
+            _id: uuidV4(),
+            ...args.carInput,
+            license: args.licenseID
+        }
+
+        return defer(() => collection.insertOne(carToInsert)).pipe(
+            map(r => r.result),
+            mergeMap((res) => {
+                console.log("RESULTADO DE MONGO", res);
+                return of({
+                    code: 200,
+                    result: "FELIPE_SANTA" + JSON.stringify(res)
+                });
+            })
+        )
+
+
+    }
+
+    testFindOneCar$(args) {
+        const collection = this.getCollection("ms-cars-mng", "cars");
+        const query = { _id: args.id };
+        return defer(() => collection.findOne(query));
     }
 
     // get product wit discpunt

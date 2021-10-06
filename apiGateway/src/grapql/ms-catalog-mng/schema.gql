@@ -16,11 +16,39 @@ type CustomPrice{
     encoding: String
 }
 
+input UserInput{
+    name: String
+    age: Int
+    car: String
+}
+
+type CarObject{
+    _id: String
+    brand: String
+    km: Int
+    owner: String
+    model: String,
+    licenseID: String
+}
+
+input CarInput{
+    brand: String
+    km: Int
+    owner: String
+    model: String
+}
+
 "Consultas de la información de los precios. Solo lectura"
 type Query {
     "Lista de los estudiantes de la academia"
     msCatalogSearchCatalogByStoreId(storeId: String!): Catalog,
     pricesWithArgs(id: String, keyword: String, limit: Int): [CustomPrice],
     products(catalogId: String): String
+    findCarById(id: String): CarObject
+}
+
+type Mutation{
+    mutationTest(user: UserInput ): MutationResult
+    createCar(carInput: CarInput, licenseID: String): MutationResult
 }
 

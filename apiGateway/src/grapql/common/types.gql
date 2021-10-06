@@ -20,3 +20,8 @@ type Catalog {
     products: [Product]
     offers: [Offer]
 }
+
+type MutationResult {
+    code: Int,
+    result: String
+}

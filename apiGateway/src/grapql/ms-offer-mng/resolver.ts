@@ -13,6 +13,9 @@ const query: IResolvers = {
                 offers: []
             }).toPromise()
         },
+    },
+    Mutation: {
+
     }
 }
 
