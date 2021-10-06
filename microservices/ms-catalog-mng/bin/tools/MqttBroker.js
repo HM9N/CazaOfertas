@@ -39,7 +39,7 @@ class MqttBroker {
 
         this.mqttClient.on('message', (topic, message) => {
             const parsedMsg = JSON.parse(message);
-            // console.log(JSON.stringify(parsedMsg));
+            //console.log(JSON.stringify(parsedMsg));
             this.incomingMessages$.next({
                 id: parsedMsg.id,
                 data: parsedMsg,

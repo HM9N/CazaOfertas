@@ -32,21 +32,17 @@ class RequestHandlerCatalogDomain {
                 let methodResolver$ = () => of(null);
 
                 const queryArgs = (mqttMsg.body || {}).args || {};
-                // console.log(mqttMsg.body);
-
+               // console.log(mqttMsg.body);
+                //console.log(mqttMsg.body.requestType);
                 // queryType - is like an query identifier 
-                switch (mqttMsg.body.queryType) {
-
-                    case 'auth':
-                        methodResolver$ = this.getObjectTest$();
-                        break;
+                switch (mqttMsg.body.requestType) {
 
                     case 'other-case':
                         const { pass, userName } = mqttMsg.body;
                         methodResolver$ = this.getObjectTest_other_case$(pass, userName);
                         break;
 
-                    case 'CREATE_PRODUCT':
+                    case 'MS-CATALOG-MNG_MUTATION_CREATE_PRODUCT':
                         const { product } = queryArgs;
                         methodResolver$ = this.createProduct$(product);
                         break;
@@ -56,7 +52,15 @@ class RequestHandlerCatalogDomain {
                         methodResolver$ = this.findPricesWithArgs$(queryArgs);
                         break;
 
+                    case 'MS-CATALOG-MNG_QUERY_SEARCH_PRODUCT':
+                        methodResolver$ = this.searchProduct$(queryArgs.keyword);
+                        break;
 
+                    case 'MS-CATALOG-MNG_MUTATION_EDIT_PRODUCT':
+                        const { productToUpdate } = queryArgs;
+                        methodResolver$ = this.updateProduct$(productToUpdate);
+                        break;
+                        
                     default:
                         methodResolver$ = of(null);
                 }
@@ -71,7 +75,7 @@ class RequestHandlerCatalogDomain {
 
                 const { requestId, requestType } = mqttMsg;
 
-                console.log({ mqttMsg, result });
+               // console.log({ mqttMsg, result });
 
                 return mqttBroker.sendReply$({
                     requestId,
@@ -80,6 +84,16 @@ class RequestHandlerCatalogDomain {
 
             }),
         )
+    }
+    // get all products.....
+    searchProduct$(keyword) {
+        const collection = mongoInstance.client
+            .db("ms-catalog-mng")
+            .collection("products");
+            const query = { "name": keyword};
+            return defer(() => collection.findOne(query)).pipe(
+                tap((doc) => console.log(doc))
+            )
     }
 
     // get all products.....
@@ -139,8 +153,8 @@ class RequestHandlerCatalogDomain {
     deleteProduct$(productId) {
 
         const collection = this.getCollection("ms-catalog-mng", "product");
-        return defer(() => collection.deleteOne({ _id: productId })).pipe(
-            // tap(r => console.log({ r }))
+        return defer(() => collection.deleteOne({ ref: productId })).pipe(
+            tap(doc => console.log(doc))
         )
     }
 
@@ -164,7 +178,7 @@ class RequestHandlerCatalogDomain {
         const update = { $set: { state: newState } }
 
         return defer(() => collection.updateOne(query, update)).pipe(
-            // tap(r => console.log({ r }))
+             tap(doc => console.log({ doc }))
         )
     }
 
@@ -190,8 +204,6 @@ class RequestHandlerCatalogDomain {
 
     }
 
-
-
     listenMessagesFormDomain$() {
 
         return mqttBroker.incomingMessages$.pipe(
@@ -207,9 +219,6 @@ class RequestHandlerCatalogDomain {
             .db(dbName)
             .collection(collectionName)
     }
-
-
-
 }
 
 module.exports = {
