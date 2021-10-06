@@ -1,0 +1,11 @@
+"Información de los precios"
+type Person {
+   name: String
+}
+
+"Consultas de la información de los precios. Solo lectura"
+type Query {
+    "Lista de los estudiantes de la academia"
+    getCatalogTest(cc: String): Catalog    
+}
+

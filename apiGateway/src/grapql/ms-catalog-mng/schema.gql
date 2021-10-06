@@ -19,7 +19,7 @@ type CustomPrice{
 "Consultas de la información de los precios. Solo lectura"
 type Query {
     "Lista de los estudiantes de la academia"
-    prices: [Price],
+    msCatalogSearchCatalogByStoreId(storeId: String!): Catalog,
     pricesWithArgs(id: String, keyword: String, limit: Int): [CustomPrice],
     products(catalogId: String): String
 }

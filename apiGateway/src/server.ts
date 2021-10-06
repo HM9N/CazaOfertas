@@ -4,11 +4,11 @@ import express from 'express';
 import compression from 'compression';
 var cors = require('cors')
 import { createServer } from 'http';
-import schema from './schema';
+import schema from './grapql';
 import expressPlayGround from 'graphql-playground-middleware-express';
 import depthLimit from 'graphql-depth-limit';
 const cluster = require('cluster');
-import { collectDefaultMetrics, register, Counter, Gauge, Histogram} from 'prom-client';
+import { collectDefaultMetrics, register, Counter, Gauge, Histogram } from 'prom-client';
 
 
 const app = express();
@@ -17,21 +17,21 @@ app.use('*', cors());
 app.use(compression());
 
 const servidor = new ApolloServer({
-    schema,
-    validationRules: [depthLimit(2)],
-    introspection: true
+	schema,
+	validationRules: [depthLimit(2)],
+	introspection: true
 });
 
 servidor.applyMiddleware({ app });
 app.get('/', expressPlayGround({
-    endpoint: '/graphql'
+	endpoint: '/graphql'
 }));
 
 const httpServer = createServer(app);
 
 const PORT = process.env.PORT || 5200;
 
- collectDefaultMetrics({
+collectDefaultMetrics({
 	gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5], // These are the default buckets.
 });
 
@@ -122,11 +122,11 @@ app.get('/metrics/counter', async (req, res) => {
 	} catch (ex) {
 		res.status(500).end(ex);
 	}
-}); 
+});
 
 httpServer.listen(
-    {
-        port: PORT
-    },
-    () => console.log(`Servidor academia online listo http://localhost:${PORT}`)
+	{
+		port: PORT
+	},
+	() => console.log(`Servidor academia online listo http://localhost:${PORT}`)
 );

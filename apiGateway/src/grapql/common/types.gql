@@ -1,0 +1,22 @@
+
+type Product {
+    ref: String
+    name: String
+    price: Float
+    description: String
+    inOffer: Boolean
+    discount: Float
+}
+
+type Offer {
+    id: String
+    products: [Product]
+    startDate: String
+    endDate: String
+}
+
+type Catalog {
+    id: String
+    products: [Product]
+    offers: [Offer]
+}
