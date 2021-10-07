@@ -24,21 +24,20 @@ input ProductInput {
     discount: Float
 }
 
-input offerInput {
+input OfferInput {
     products: [ProductInput],
     date: String
 }
 
 input CatalogInput {
   products: [ProductInput]
-  offers: [offerInput]
+  offers: [OfferInput]
 }
 
 "Consultas de la información de los precios. Solo lectura"
 type Query {
     "Lista de los estudiantes de la academia"
-    msCatalogSearchCatalogByStoreId(storeId: String): Catalog,
-    removeProductFromCatalog(catalogId: String, productId: String): String
+    msCatalogSearchCatalogByStoreId(storeId: String!): Catalog,
     products(catalogId: String): String,
     searchProduct(keyword: String): [ProductObject]
 }
@@ -49,4 +48,3 @@ type Mutation{
     deleteProduct(productRef: String): MutationResult
     createCatalog(catalogInput: CatalogInput): MutationResult
 }
-
