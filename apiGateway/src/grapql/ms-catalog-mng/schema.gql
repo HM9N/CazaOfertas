@@ -37,7 +37,8 @@ input CatalogInput {
 "Consultas de la información de los precios. Solo lectura"
 type Query {
     "Lista de los estudiantes de la academia"
-    msCatalogSearchCatalogByStoreId(storeId: String!): Catalog,
+    msCatalogSearchCatalogByStoreId(storeId: String): Catalog,
+    removeProductFromCatalog(catalogId: String, productId: String): String
     products(catalogId: String): String,
     searchProduct(keyword: String): [ProductObject]
 }

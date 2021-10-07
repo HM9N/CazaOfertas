@@ -1,0 +1,64 @@
+"Store input"
+input StoreInput{
+    "Nombre de la tienda"
+    name: String 
+    "Dirección de la tienda"
+    address: String
+    "Administrador de la tienda" 
+    admin: String
+    "Arreglo de objetos de Catalogo"
+    catalog: [CatalogInput]
+}
+
+"Catalog input"
+input CatalogInput{
+    "Identificador del catalogo"
+    id: String
+    "Arreglo de objetos de Productos"
+    products: [ProductInput]
+    "Arreglo de objetos de Ofertas"
+    offers: [OfferInput]
+}
+
+"Product input"
+input ProductInput {
+    "Referencia del producto"
+    ref: String
+    "Nombre del producto"
+    name: String
+    "Precio del producto"
+    price: Float
+    "Descripcion del producto"
+    description: String
+    "Estado del producto TRUE/FALSE"
+    inOffer: Boolean
+    "Descuento del producto"
+    discount: Float
+}
+
+"Oferta input"
+input OfferInput {
+    "Identificador de la oferta"
+    id: String
+    "Arreglo de objeto de productos en oferta"
+    products: [ProductInput]
+    "Fecha de inicio de la oferta"
+    startDate: String
+    "Fecha de finalización de la oferta"
+    endDate: String
+}
+
+
+"Consultas sobre información del microservicio"
+type Query {
+    "Buscar una tienda por el identificativo"
+    findStoreById(id: String): Store,
+    "Buscar una tienda por palabra clave"
+    findStoreByKeyword(keyword: String): [Store],
+}
+
+"Consultas microservicio de store"
+type Mutation{
+    "Crear una tienda"
+    createStore(storeInput: StoreInput): MutationResult
+}

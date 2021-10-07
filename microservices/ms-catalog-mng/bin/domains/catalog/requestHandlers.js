@@ -65,6 +65,14 @@ class RequestHandlerCatalogDomain {
                         methodResolver$ = this.createCatalog$(catalog);
                         break;
 
+                    case 'MS-CATALOG-MNG_FIND_CATALOG_BY_STORE_ID':
+                        methodResolver$ = this.searchCatalogByStoreId$(queryArgs);
+                        break;
+
+                    case 'MS-CATALOG-MNG_REMOVE_PRODUCT_FROM_CATALOG':
+                        methodResolver$ = this.removeProductFromCatalog$(queryArgs);
+                        break;
+
                     default:
                         methodResolver$ = of(null);
                 }
@@ -86,6 +94,34 @@ class RequestHandlerCatalogDomain {
             }),
         )
     }
+
+    searchCatalogByStoreId$(args){
+        const collection = mongoInstance.client
+            .db("ms-catalog-mng")
+            .collection("catalog");
+        
+        const query = {"storeId": args.storeId};
+        return defer(() => collection.findOne(query))
+    }
+
+    removeProductFromCatalog$(args){
+        const collection = mongoInstance.client
+            .db("ms-catalog-mng")
+            .collection("catalog");
+        
+        return defer(() => collection.findOneAndUpdate(
+            {"_id": args.catalogId },
+            {$pull: {products: {"_id": args.productId} } },
+            false,
+            true,
+            )).pipe(
+                map(r => r.result),
+                mergeMap((res) => {
+                    return of( "¡El producto ha sido eliminado del catalogo con éxito!" )
+                })
+            )
+    }
+
     // get all products.....
     searchProduct$(keyword) {
         const collection = mongoInstance.client
@@ -96,15 +132,8 @@ class RequestHandlerCatalogDomain {
     }
 
     createProduct$(product) {
-<<<<<<< HEAD
-        const collection = this.getCollection("ms-catalog-mng", "products");
-        const productToInsert = product.productInput;
-        productToInsert._id = uuidV4();
-        return defer(() => collection.insertOne(productToInsert)).pipe(
-=======
         const collection = this.getCollection("ms-catalog-mng", "product");
         return defer(() => collection.insertOne(product)).pipe(
->>>>>>> fb92d8babfed4ab5783193e0d9bd2ed353dcbb7e
             map(r => r.result)
         )
     }
