@@ -40,6 +40,8 @@ type Query {
     msCatalogSearchCatalogByStoreId(storeId: String!): Catalog,
     products(catalogId: String): String,
     searchProduct(keyword: String): [ProductObject]
+    removeProductFromCatalog(catalogId: String, productId: String): String
+
 }
 
 type Mutation{

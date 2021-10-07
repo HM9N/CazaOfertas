@@ -14,6 +14,24 @@ const query: IResolvers = {
             return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
                 map((mqttMsg) => mqttMsg.data)
             ).toPromise()
+        },
+        msCatalogSearchCatalogByStoreId(root, args, context){
+
+            const requestType = 'MS-CATALOG-MNG_FIND_CATALOG_BY_STORE_ID';
+            const requestBody = buildRequestForMqtt('CATALOG', requestType, args);
+
+            return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
+                map((mqttMsg) => mqttMsg.data),
+            ).toPromise();
+        },
+        removeProductFromCatalog(root, args, context){
+
+            const requestType = 'MS-CATALOG-MNG_REMOVE_PRODUCT_FROM_CATALOG';
+            const requestBody = buildRequestForMqtt('CATALOG', requestType, args);
+
+            return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
+                map((mqttMsg) => mqttMsg.data),
+            ).toPromise();
         }
     },
     Mutation: {
