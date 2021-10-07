@@ -15,7 +15,14 @@ const query: IResolvers = {
         },
     },
     Mutation: {
+        createOffer(root, args, context){
+            const requestType = 'MS-OFFER_MNG_CREATE_OFFER';
+            const requestBody = buildRequestForMqtt('OFFER', requestType, args);
 
+            return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
+                map((mqttMsg) => mqttMsg.data)
+            ).toPromise();
+        }
     }
 }
 

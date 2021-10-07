@@ -21,6 +21,14 @@ type Catalog {
     offers: [Offer]
 }
 
+type Store {
+    _id: String
+    name: String
+    address: String
+    admin: String,
+    catalog: [Catalog]
+}
+
 type MutationResult {
     code: Int,
     result: String

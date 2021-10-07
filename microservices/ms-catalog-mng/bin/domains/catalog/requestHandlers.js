@@ -64,6 +64,14 @@ class RequestHandlerCatalogDomain {
                         methodResolver$ = this.testFindOneCar$(queryArgs);
                         break;
 
+                    case 'MS-CATALOG-MNG_FIND_CATALOG_BY_STORE_ID':
+                        methodResolver$ = this.searchCatalogByStoreId$(queryArgs);
+                        break;
+
+                    case 'MS-CATALOG-MNG_REMOVE_PRODUCT_FROM_CATALOG':
+                        methodResolver$ = this.removeProductFromCatalog$(queryArgs);
+                        break;
+
                     default:
                         methodResolver$ = of(null);
                 }
@@ -86,6 +94,44 @@ class RequestHandlerCatalogDomain {
                 })
 
             }),
+        )
+    }
+
+    searchCatalogByStoreId$(args){
+        const collection = mongoInstance.client
+            .db("ms-catalog-mng")
+            .collection("catalog");
+        
+        const query = {"storeId": args.storeId};
+        return defer(() => collection.findOne(query))
+    }
+
+    removeProductFromCatalog$(args){
+        const collection = mongoInstance.client
+            .db("ms-catalog-mng")
+            .collection("catalog");
+        
+        return defer(() => collection.findOneAndUpdate(
+            {"_id": args.catalogId },
+            {$pull: {products: {"_id": args.productId} } },
+            false,
+            true,
+            )).pipe(
+                map(r => r.result),
+                mergeMap((res) => {
+                    return of( "¡El producto ha sido eliminado del catalogo con éxito!" )
+                })
+            )
+    }
+
+    /**
+     * REMOVE A PRODUCT
+     */
+     deleteProduct$(productId) {
+
+        const collection = this.getCollection("ms-catalog-mng", "product");
+        return defer(() => collection.deleteOne({ _id: productId })).pipe(
+            // tap(r => console.log({ r }))
         )
     }
 
@@ -175,16 +221,7 @@ class RequestHandlerCatalogDomain {
 
     }
 
-    /**
-     * REMOVE A PRODUCT
-     */
-    deleteProduct$(productId) {
-
-        const collection = this.getCollection("ms-catalog-mng", "product");
-        return defer(() => collection.deleteOne({ _id: productId })).pipe(
-            // tap(r => console.log({ r }))
-        )
-    }
+    
 
     updateProduct$(product) {
         const { id } = product;

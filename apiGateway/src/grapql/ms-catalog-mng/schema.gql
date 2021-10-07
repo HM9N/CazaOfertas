@@ -41,10 +41,11 @@ input CarInput{
 "Consultas de la información de los precios. Solo lectura"
 type Query {
     "Lista de los estudiantes de la academia"
-    msCatalogSearchCatalogByStoreId(storeId: String!): Catalog,
+    msCatalogSearchCatalogByStoreId(storeId: String): Catalog,
     pricesWithArgs(id: String, keyword: String, limit: Int): [CustomPrice],
-    products(catalogId: String): String
-    findCarById(id: String): CarObject
+    products(catalogId: String): String,
+    findCarById(id: String): CarObject,
+    removeProductFromCatalog(catalogId: String, productId: String): String
 }
 
 type Mutation{

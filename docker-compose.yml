@@ -14,17 +14,17 @@ services:
         aliases:
         - 'broker-mqtt-service'
 
-  api-gateway:
-    build: ./apiGateway 
-    ports:
-      - "5200:5200"
-    hostname: "api-gateway"
-    depends_on:
-      - "broker-mqtt"
-    networks:
-      infranet:
-        aliases:
-        - 'api-gateway-service'
+  # api-gateway:
+  #   build: ./apiGateway 
+  #   ports:
+  #     - "5200:5200"
+  #   hostname: "api-gateway"
+  #   depends_on:
+  #     - "broker-mqtt"
+  #   networks:
+  #     infranet:
+  #       aliases:
+  #       - 'api-gateway-service'
 
   catalog-mongo-db:
     image: mongo:4

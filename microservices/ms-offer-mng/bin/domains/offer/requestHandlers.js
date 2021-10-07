@@ -1,6 +1,7 @@
 const { of, filter, tap, mergeMap, defer, map, forkJoin, concat, skip } = require("rxjs");
 const MqttBroker = require("../../tools/MqttBroker");
 const {      } = require("./CatalogDA");
+const uuidv4 = require('uuid/v4');
 
 /**
  * @type MqttBroker
@@ -31,13 +32,20 @@ class RequestHandlerOfferDomain {
 
                 let methodResolver$ = () => of(null);
 
+                const queryArgs = (mqttMsg.body || {}).args || {};
+
                 switch (mqttMsg.body.requestType) {
 
 
                     case 'CREATE_PRODUCT':
-                        const { product } = mqttMsg.body.args;
-                        methodResolver$ = this.createProduct$(product);
+                        //const { product } = mqttMsg.body.args;
+                        methodResolver$ = this.createProduct$(queryArgs);
                         break;
+
+                    case 'MS-OFFER_MNG_CREATE_OFFER':
+                        methodResolver$ = this.createOffer$(queryArgs);
+                        break;
+
 
                     default:
                         methodResolver$ = of(null);
@@ -63,6 +71,27 @@ class RequestHandlerOfferDomain {
             }),
             tap(() => {
                 console.log('[3] configurando listener de catalog')
+            })
+        )
+    }
+
+    //create an offer
+    createOffer$(args){
+        const collection = this.getCollection("ms-offer-mng", "offer");
+        console.log("#############", args);
+
+        const offerToInsert = {
+            _id: uuidv4(),
+            ...args.offerInput,
+        }
+        return defer(() => collection.insertOne(offerToInsert)).pipe(
+            map(r => r.result),
+            mergeMap((res) => {
+                console.log("RESULTADO DE MONGO", res);
+                return of({
+                    code: 200,
+                    result: "¡Se ha registrado éxitosamente la oferta!" + JSON.stringify(res)
+                });
             })
         )
     }
