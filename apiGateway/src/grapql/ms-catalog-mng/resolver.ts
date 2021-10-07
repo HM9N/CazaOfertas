@@ -41,7 +41,6 @@ const query: IResolvers = {
             const requestBody = buildRequestForMqtt("CAR", requestType, args);
 
             return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
-                // tap(res => console.log(res))
                 map(res => res.data)
             ).toPromise();
         },

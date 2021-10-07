@@ -1,4 +1,3 @@
-// console.log('Hola a la academia onlinedddd');
 import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
 import compression from 'compression';
@@ -18,7 +17,7 @@ app.use(compression());
 
 const servidor = new ApolloServer({
 	schema,
-	validationRules: [depthLimit(2)],
+	validationRules: [depthLimit(5)],
 	introspection: true
 });
 

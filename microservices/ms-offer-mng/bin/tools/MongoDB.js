@@ -38,7 +38,10 @@ module.exports = {
      */
     singleton: () => {
         if (!instance) {
-            instance = new MongoDB({ url: 'mongodb://localhost:27019', dbName: 'offer' })
+            instance = new MongoDB({
+                url: 'mongodb://offer-mongo-db-service:27017',
+                dbName: 'offer'
+            })
         }
         return instance;
     }

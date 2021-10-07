@@ -1,6 +1,5 @@
 const { of, filter, tap, mergeMap, defer, map, forkJoin, concat, skip } = require("rxjs");
 const MqttBroker = require("../../tools/MqttBroker");
-const {      } = require("./CatalogDA");
 
 /**
  * @type MqttBroker
@@ -18,7 +17,7 @@ let instance;
 const DOMAIN_KEYS = ['OFFER'];
 
 
-class RequestHandlerOfferDomain { 
+class RequestHandlerOfferDomain {
 
     start$() {
         return this.configureMqttListener$()
@@ -105,7 +104,7 @@ class RequestHandlerOfferDomain {
         console.log("Holaaaaaaaa" + product);
         return of(product);
     }
-    
+
 
     /**
      * REMOVE A PRODUCT
