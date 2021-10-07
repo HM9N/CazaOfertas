@@ -15,32 +15,6 @@ services:
         aliases:
         - 'broker-mqtt-service'
 
-<<<<<<< HEAD
-  # api-gateway:
-  #   build: ./apiGateway 
-  #   ports:
-  #     - "5200:5200"
-  #   hostname: "api-gateway"
-  #   depends_on:
-  #     - "broker-mqtt"
-  #   networks:
-  #     infranet:
-  #       aliases:
-  #       - 'api-gateway-service'
-=======
-<<<<<<< HEAD
-#  api-gateway:
-#    build: ./apiGateway 
-#    ports:
-#      - "5200:5200"
-#    hostname: "api-gateway"
-#    depends_on:
-#      - "broker-mqtt"
-#    networks:
-#      infranet:
-#        aliases:
-#        - 'api-gateway-service'
-=======
   # API GATEWAY
   api-gateway:
     build: ./apiGateway 
@@ -53,8 +27,6 @@ services:
       infranet:
         aliases:
         - 'api-gateway-service'
->>>>>>> fb92d8babfed4ab5783193e0d9bd2ed353dcbb7e
->>>>>>> 18596a089ba4c878c3297f6c9bf60de01ff293a7
 
   # MONGO_DB SERVER FOR CATALOG MS
   catalog-mongo-db:
