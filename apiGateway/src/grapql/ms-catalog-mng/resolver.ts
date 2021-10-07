@@ -14,24 +14,6 @@ const query: IResolvers = {
             return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
                 map((mqttMsg) => mqttMsg.data)
             ).toPromise()
-        },
-        msCatalogSearchCatalogByStoreId(root, args, context){
-
-            const requestType = 'MS-CATALOG-MNG_FIND_CATALOG_BY_STORE_ID';
-            const requestBody = buildRequestForMqtt('CATALOG', requestType, args);
-
-            return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
-                map((mqttMsg) => mqttMsg.data),
-            ).toPromise();
-        },
-        removeProductFromCatalog(root, args, context){
-
-            const requestType = 'MS-CATALOG-MNG_REMOVE_PRODUCT_FROM_CATALOG';
-            const requestBody = buildRequestForMqtt('CATALOG', requestType, args);
-
-            return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
-                map((mqttMsg) => mqttMsg.data),
-            ).toPromise();
         }
     },
     Mutation: {
@@ -58,12 +40,8 @@ const query: IResolvers = {
             const requestBody = buildRequestForMqtt("CATALOG", requestType, args);
 
             return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
-<<<<<<< HEAD
                 tap(res => console.log(res))
                // map(res => res.data)
-=======
-                map(res => res.data)
->>>>>>> fb92d8babfed4ab5783193e0d9bd2ed353dcbb7e
             ).toPromise();
         },
         createCatalog(root, args, context) {
