@@ -14,6 +14,8 @@ class MongoDB {
     }
 
     start$() {
+        console.log(`------------ Connecting to Mongo host ==> ${this.url}`);
+
         return bindNodeCallback(MongoClient.connect)(this.url,
             {
                 // retry to connect for 60 times
@@ -38,7 +40,10 @@ module.exports = {
      */
     singleton: () => {
         if (!instance) {
-            instance = new MongoDB({ url: 'mongodb://localhost:27018', dbName: 'test' })
+            instance = new MongoDB({
+                url: 'mongodb://catalog-mongo-db-service:27017',
+                dbName: 'test'
+            })
         }
         return instance;
     }

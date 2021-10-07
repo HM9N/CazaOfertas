@@ -1,6 +1,7 @@
 version: "3"
 
 services:
+  # MQTT SERVER
   broker-mqtt:
     image: eclipse-mosquitto:1.6
     ports:
@@ -14,6 +15,7 @@ services:
         aliases:
         - 'broker-mqtt-service'
 
+<<<<<<< HEAD
 #  api-gateway:
 #    build: ./apiGateway 
 #    ports:
@@ -25,12 +27,27 @@ services:
 #      infranet:
 #        aliases:
 #        - 'api-gateway-service'
+=======
+  # API GATEWAY
+  api-gateway:
+    build: ./apiGateway 
+    ports:
+      - "5200:5200"
+    hostname: "api-gateway"
+    depends_on:
+      - "broker-mqtt"
+    networks:
+      infranet:
+        aliases:
+        - 'api-gateway-service'
+>>>>>>> fb92d8babfed4ab5783193e0d9bd2ed353dcbb7e
 
+  # MONGO_DB SERVER FOR CATALOG MS
   catalog-mongo-db:
     image: mongo:4
     ports:
       - "27018:27017"
-    hostname: "catalog-mongo-db-service"
+    hostname: "catalog-mongo-db"
     environment: 
       - storageEngine=wiredTiger
     volumes: 
@@ -40,11 +57,12 @@ services:
         aliases:
         - 'catalog-mongo-db-service'
 
+  # MONGO DB SERVER FOR OFFER MS 
   offer-mongo-db:
     image: mongo:4
     ports:
       - "27019:27017"
-    hostname: "offer-mongo-db-service"
+    hostname: "offer-mongo-db"
     environment: 
       - storageEngine=wiredTiger
     volumes: 
@@ -54,11 +72,12 @@ services:
         aliases:
         - 'offer-mongo-db-service'
 
+  # MONGO DB SERVER FOR STORE MS 
   store-mongo-db:
     image: mongo:4
     ports:
       - "27020:27017"
-    hostname: "store-mongo-db-service"
+    hostname: "store-mongo-db"
     environment: 
       - storageEngine=wiredTiger
     volumes: 
@@ -67,6 +86,43 @@ services:
       infranet:
         aliases:
         - 'store-mongo-db-service'
+
+  # CATALOG_MANAGER MICRO-SERVICE
+  ms-catalog-mng:
+    build: ./microservices/ms-catalog-mng
+    hostname: "ms-catalog-mng"
+    depends_on:
+      - "broker-mqtt"
+      - "catalog-mongo-db"   
+    networks:
+      infranet:
+        aliases:
+        - 'ms-catalog-mng-service'
+
+  # OFFER_MANAGER MICRO-SERVICE
+  ms-offer-mng:
+    build: ./microservices/ms-offer-mng
+    hostname: "ms-offer-mng"
+    depends_on:
+      - "broker-mqtt"
+      - "offer-mongo-db"   
+    networks:
+      infranet:
+        aliases:
+        - 'ms-offer-mng-service'
+
+  # STORE_MANAGER MICRO-SERVICE
+  ms-store-mng:
+    build: ./microservices/ms-store-mng
+    hostname: "ms-store-mng"
+    depends_on:
+      - "broker-mqtt"
+      - "store-mongo-db"   
+    networks:
+      infranet:
+        aliases:
+        - 'ms-store-mng-service'
+        
 
   grafana:
     image: grafana/grafana:8.0.6
@@ -118,6 +174,7 @@ services:
       infranet:
         aliases:
         - 'node-exporter-service'
+
 networks:
   infranet:
 

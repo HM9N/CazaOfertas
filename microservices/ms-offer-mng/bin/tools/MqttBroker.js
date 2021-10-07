@@ -28,14 +28,14 @@ class MqttBroker {
         this.listeningTopics = ['requests', 'events'];
         this.repliesTopic = "responses";
 
-        this.mqttClient = MQTT.connect(this.mqttServerUrl, {
-            host: this.mqttServerUrl,
+        this.mqttClient = MQTT.connect(this.serverUrl, {
+            host: this.serverUrl,
             port: this.port,
             clientId: this.clientId,
             // username: this.auth.user,
             // password: this.auth.password,
             protocol: "tcp",
-            protocolVersion: 4  
+            protocolVersion: 4
         });
 
         this.mqttClient.on('connect', () => console.log(` ------- Mqtt client connected ----------`));

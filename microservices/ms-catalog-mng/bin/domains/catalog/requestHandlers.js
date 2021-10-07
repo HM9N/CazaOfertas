@@ -96,10 +96,15 @@ class RequestHandlerCatalogDomain {
     }
 
     createProduct$(product) {
+<<<<<<< HEAD
         const collection = this.getCollection("ms-catalog-mng", "products");
         const productToInsert = product.productInput;
         productToInsert._id = uuidV4();
         return defer(() => collection.insertOne(productToInsert)).pipe(
+=======
+        const collection = this.getCollection("ms-catalog-mng", "product");
+        return defer(() => collection.insertOne(product)).pipe(
+>>>>>>> fb92d8babfed4ab5783193e0d9bd2ed353dcbb7e
             map(r => r.result)
         )
     }

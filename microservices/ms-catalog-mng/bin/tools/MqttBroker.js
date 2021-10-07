@@ -25,8 +25,10 @@ class MqttBroker {
         this.listeningTopics = ['requests', 'events'];
         this.repliesTopic = "responses";
 
-        this.mqttClient = MQTT.connect(this.mqttServerUrl, {
-            host: this.mqttServerUrl,
+        console.log('--------- CONECTING TO MQTT SERVER', `host: ${this.serverUrl}`);
+
+        this.mqttClient = MQTT.connect(this.serverUrl, {
+            host: this.serverUrl,
             port: this.port,
             clientId: this.clientId,
             // username: this.auth.user,
@@ -39,7 +41,10 @@ class MqttBroker {
 
         this.mqttClient.on('message', (topic, message) => {
             const parsedMsg = JSON.parse(message);
+<<<<<<< HEAD
             //console.log(JSON.stringify(parsedMsg));
+=======
+>>>>>>> fb92d8babfed4ab5783193e0d9bd2ed353dcbb7e
             this.incomingMessages$.next({
                 id: parsedMsg.id,
                 data: parsedMsg,
@@ -47,12 +52,6 @@ class MqttBroker {
             });
 
         });
-
-        // this.mqttClient.subscribe('requests').then(() => {
-        //     console.log('subcrito a requests');
-        // });
-
-        // this.configMessageListener$(this.listeningTopics).subscribe();
 
     }
 

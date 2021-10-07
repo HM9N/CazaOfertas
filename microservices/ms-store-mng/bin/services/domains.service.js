@@ -1,5 +1,5 @@
 "use strict";
-const {concat} = require("rxjs");
+const { concat } = require("rxjs");
 
 const domains = require('../domains');
 
