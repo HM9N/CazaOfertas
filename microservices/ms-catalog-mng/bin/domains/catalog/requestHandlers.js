@@ -33,35 +33,36 @@ class RequestHandlerCatalogDomain {
                 let methodResolver$ = () => of(null);
 
                 const queryArgs = (mqttMsg.body || {}).args || {};
-                // console.log(mqttMsg.body);
-                // queryType - is like an query identifier 
+
                 switch (mqttMsg.body.requestType) {
-
-                    case 'auth':
-                        methodResolver$ = this.getObjectTest$();
-                        break;
-
                     case 'other-case':
                         const { pass, userName } = mqttMsg.body;
                         methodResolver$ = this.getObjectTest_other_case$(pass, userName);
                         break;
 
-                    case 'CREATE_PRODUCT':
-                        const { product } = queryArgs;
+                    case 'MS-CATALOG-MNG_MUTATION_CREATE_PRODUCT':
+                        console.log(queryArgs);
+                        const product = queryArgs;
                         methodResolver$ = this.createProduct$(product);
                         break;
 
-                    case 'MS-CATALOG-MNG_QUERY_GET-PRICES-TEST-FN-WITH-ARGS':
-
-                        methodResolver$ = this.findPricesWithArgs$(queryArgs);
+                    case 'MS-CATALOG-MNG_MUTATION_EDIT_PRODUCT':
+                        const productToUpdate  = queryArgs;
+                        methodResolver$ = this.updateProduct$(productToUpdate);
                         break;
 
-                    case 'MS-TEST-CREATE-CAR':
-                        methodResolver$ = this.testCreateCar$(queryArgs);
+                    case 'MS-CATALOG-MNG_QUERY_SEARCH_PRODUCT':
+                        methodResolver$ = this.searchProduct$(queryArgs.keyword);
                         break;
-
-                    case 'MS-CATALOG-MNG_FIND_ONE_CAR_BY_ID':
-                        methodResolver$ = this.testFindOneCar$(queryArgs);
+                    
+                    case 'MS-CATALOG-MNG_MUTATION_DELETE_PRODUCT':
+                        methodResolver$ = this.deleteProduct$(queryArgs.productRef);
+                        break;
+                    
+                    case 'MS-CATALOG-MNG_MUTATION_CREATE_CATALOG':
+                        console.log(queryArgs);
+                        const catalog = queryArgs;
+                        methodResolver$ = this.createCatalog$(catalog);
                         break;
 
                     default:
@@ -72,13 +73,10 @@ class RequestHandlerCatalogDomain {
                     of(mqttMsg),
                     methodResolver$
                 ])
-
             }),
             mergeMap(([mqttMsg, result]) => {
 
                 const { requestId } = mqttMsg;
-
-                console.log({ mqttMsg, result });
 
                 return mqttBroker.sendReply$({
                     requestId,
@@ -88,115 +86,62 @@ class RequestHandlerCatalogDomain {
             }),
         )
     }
-
     // get all products.....
-    getObjectTest$() {
-        // this.client.db(this.dbName)
+    searchProduct$(keyword) {
         const collection = mongoInstance.client
             .db("ms-catalog-mng")
-            .collection("catalogs");
-        const query = { "_id": "1238y1273y12s31_" };
-        return defer(() => collection.findOne(query)).pipe(
-            map(doc => (doc || {}).offers || [])
-        )
-    }
-
-    /**
-     * EXAMPLE
-     * @param {*} args 
-     * @returns 
-     */
-    testCreateCar$(args) {
-        const collection = this.getCollection("ms-cars-mng", "cars");
-
-        // build object to insert
-        const carToInsert = {
-            _id: uuidV4(),
-            ...args.carInput,
-            license: args.licenseID
-        }
-
-        return defer(() => collection.insertOne(carToInsert)).pipe(
-            map(r => r.result),
-            mergeMap((res) => {
-                console.log("RESULTADO DE MONGO", res);
-                return of({
-                    code: 200,
-                    result: "FELIPE_SANTA" + JSON.stringify(res)
-                });
-            })
-        )
-
-
-    }
-
-    testFindOneCar$(args) {
-        const collection = this.getCollection("ms-cars-mng", "cars");
-        const query = { _id: args.id };
-        return defer(() => collection.findOne(query));
-    }
-
-    // get product wit discpunt
-    getObjectTest_other_case$(pass, userName) {
-        // this.client.db(this.dbName)
-        const collection = mongoInstance.client
-            .db("ms-catalog-mng")
-            .collection("catalogs");
-
-        const query = { "_id": "1238y1273y12s31" };
-        return defer(() => collection.findOne(query)).pipe(
-            map(doc => (doc || {}).offers || [])
-        )
-
+            .collection("products");
+            const query = { "name":  { $regex: keyword, $options: 'i' }}; 
+            return defer(() => collection.find(query).toArray());
     }
 
     createProduct$(product) {
+<<<<<<< HEAD
+        const collection = this.getCollection("ms-catalog-mng", "products");
+        const productToInsert = product.productInput;
+        productToInsert._id = uuidV4();
+        return defer(() => collection.insertOne(productToInsert)).pipe(
+=======
         const collection = this.getCollection("ms-catalog-mng", "product");
         return defer(() => collection.insertOne(product)).pipe(
+>>>>>>> fb92d8babfed4ab5783193e0d9bd2ed353dcbb7e
             map(r => r.result)
         )
     }
 
-    findPricesWithArgs$(args) {
-
-        return of([
-            {
-                name: `HOLA TIEMPO 1${Date.now()}`,
-                size: Math.floor(Math.random() * 100),
-                encoding: JSON.stringify(args)
-            },
-            {
-                name: `HOLA TIEMPO 2 ${Date.now()}`,
-                size: Math.floor(Math.random() * 100),
-                encoding: JSON.stringify(args)
-            }
-        ])
-
+    createCatalog$(catalog) {
+        const collection = this.getCollection("ms-catalog-mng", "catalogs");
+        console.log(catalog);
+        const catalogToInsert = catalog.catalogInput;
+        console.log(catalogToInsert);
+        catalogToInsert._id = uuidV4();
+        return defer(() => collection.insertOne(catalogToInsert)).pipe(
+            map(r => r.result)
+        )
     }
 
     /**
      * REMOVE A PRODUCT
      */
-    deleteProduct$(productId) {
+    deleteProduct$(productRef) {
 
-        const collection = this.getCollection("ms-catalog-mng", "product");
-        return defer(() => collection.deleteOne({ _id: productId })).pipe(
-            // tap(r => console.log({ r }))
+        const collection = this.getCollection("ms-catalog-mng", "products");
+        return defer(() => collection.deleteOne({ ref: productRef })).pipe(
+            tap(doc => console.log(doc))
         )
     }
 
     updateProduct$(product) {
-        const { id } = product;
-        const collection = this.getCollection("ms-catalog-mng", "product");
-
-        const query = { _id: id };
-        const update = { $set: { ...product } }
+        const { ref } =  product.productInput;
+        const collection = this.getCollection("ms-catalog-mng", "products");
+        const producToUpdate = product.productInput;
+        const query = { ref: ref };
+        const update = { $set: { ...producToUpdate } }
 
         return defer(() => collection.updateOne(query, update)).pipe(
-            // tap(r => console.log({ r }))
+            tap(r => console.log(r))
         )
     }
-
 
     updateProductState$(productId, newState) {
         const collection = this.getCollection("ms-catalog-mng", "product");
@@ -205,12 +150,10 @@ class RequestHandlerCatalogDomain {
         const update = { $set: { state: newState } }
 
         return defer(() => collection.updateOne(query, update)).pipe(
-            // tap(r => console.log({ r }))
+             tap(doc => console.log({ doc }))
         )
     }
 
-
-    // arroz, 0, 10
     listProducts$(keyword, pagination, jwt) {
 
         const collection = this.getCollection("ms-catalog-mng", "product");
@@ -228,10 +171,7 @@ class RequestHandlerCatalogDomain {
             .limit(size)
             .toArray()
         );
-
     }
-
-
 
     listenMessagesFormDomain$() {
 
@@ -248,9 +188,6 @@ class RequestHandlerCatalogDomain {
             .db(dbName)
             .collection(collectionName)
     }
-
-
-
 }
 
 module.exports = {

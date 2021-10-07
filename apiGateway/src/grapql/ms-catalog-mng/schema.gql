@@ -1,34 +1,11 @@
 
-
-"Información de los precios"
-type Price {
-    "identificativo del precio"
-    id: ID
-    "Nombre del producto"
-    product: String
-    "Precio del producto"
-    email: Int
-}
-
-type CustomPrice{
+type ProductObject {
+    ref: String
     name: String
-    size: Int
-    encoding: String
-}
-
-input UserInput{
-    name: String
-    age: Int
-    car: String
-}
-
-type CarObject{
-    _id: String
-    brand: String
-    km: Int
-    owner: String
-    model: String,
-    licenseID: String
+    price: Float
+    description: String
+    inOffer: Boolean
+    discount: Float
 }
 
 input CarInput{
@@ -38,17 +15,37 @@ input CarInput{
     model: String
 }
 
+input ProductInput {
+    ref: String
+    name: String
+    price: Float
+    description: String
+    inOffer: Boolean
+    discount: Float
+}
+
+input offerInput {
+    products: [ProductInput],
+    date: String
+}
+
+input CatalogInput {
+  products: [ProductInput]
+  offers: [offerInput]
+}
+
 "Consultas de la información de los precios. Solo lectura"
 type Query {
     "Lista de los estudiantes de la academia"
     msCatalogSearchCatalogByStoreId(storeId: String!): Catalog,
-    pricesWithArgs(id: String, keyword: String, limit: Int): [CustomPrice],
-    products(catalogId: String): String
-    findCarById(id: String): CarObject
+    products(catalogId: String): String,
+    searchProduct(keyword: String): [ProductObject]
 }
 
 type Mutation{
-    mutationTest(user: UserInput ): MutationResult
-    createCar(carInput: CarInput, licenseID: String): MutationResult
+    createProduct(productInput: ProductInput): MutationResult
+    editProduct(productInput: ProductInput): MutationResult
+    deleteProduct(productRef: String): MutationResult
+    createCatalog(catalogInput: CatalogInput): MutationResult
 }
 
