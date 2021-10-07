@@ -4,7 +4,9 @@ let instance = null;
 
 function createIntance() {
     return new MqttBroker({
-        serverUrl: 'localhost', replyTimeout: 1000, port: 1883
+        serverUrl: 'broker-mqtt-service', //'localhost', 
+        replyTimeout: 1000,
+        port: 1883
     })
 }
 
@@ -13,7 +15,7 @@ function createIntance() {
  */
 
 module.exports = () => {
-    if(!instance){
+    if (!instance) {
         instance = createIntance();
     }
     return instance;

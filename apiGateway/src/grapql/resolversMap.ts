@@ -17,7 +17,6 @@ const resolversMap = {
     }
 }
 
-console.log({ resolversMap });
-
+// console.log({ resolversMap });
 
 export default resolversMap;

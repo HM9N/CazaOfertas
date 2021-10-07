@@ -1,5 +1,5 @@
 FROM node:10.16-alpine
 WORKDIR /app
-COPY [ "package.json", "package-lock.json", "./" ]
+COPY . /app/
 RUN npm install
-CMD npm start
+CMD ["npm", "start"]

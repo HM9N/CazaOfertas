@@ -17,8 +17,8 @@ const {
 } = require('rxjs/operators');
 
 class MqttBroker {
-    
-    constructor({ serverUrl, replyTimeout, port = null}){
+
+    constructor({ serverUrl, replyTimeout, port = null }) {
         this.serverUrl = serverUrl;
         this.replyTimeout = replyTimeout;
         this.port = port;
@@ -34,8 +34,8 @@ class MqttBroker {
         this.listeningTopics = ['requests', 'events'];
         this.repliesTopic = "responses";
 
-        this.mqttClient = MQTT.connect(this.mqttServerUrl, {
-            host: this.mqttServerUrl,
+        this.mqttClient = MQTT.connect(this.serverUrl, {
+            host: this.serverUrl,
             port: this.port,
             clientId: this.clientId,
             // username: this.auth.user,
@@ -58,9 +58,9 @@ class MqttBroker {
         });
     }
 
-    configMessageListener$(topics ) {
+    configMessageListener$(topics) {
         return from(topics).pipe(
-            mergeMap(topic => 
+            mergeMap(topic =>
                 defer(() => this.mqttClient.subscribe(topic)).pipe(
                     tap(() => console.log(`[1] Subscrito a ${topic}`))
                 )

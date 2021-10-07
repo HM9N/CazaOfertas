@@ -1,18 +1,18 @@
 "use strict"
 
-const {bindNodeCallback} = require("rxjs");
-const {map} = require("rxjs/operators");
+const { bindNodeCallback } = require("rxjs");
+const { map } = require("rxjs/operators");
 const MongoClient = require("mongodb").MongoClient;
 
 let instance = null;
 
 class MongoDB {
-    constructor({url, dbName}){
+    constructor({ url, dbName }) {
         this.url = url;
         this.dbName = dbName;
     }
 
-    start$(){
+    start$() {
         return bindNodeCallback(MongoClient.connect)(this.url,
             {
                 reconnectTries: 4,
@@ -35,8 +35,11 @@ module.exports = {
      * 
      */
     singleton: () => {
-        if(!instance){
-            instance = new MongoDB({ url: 'mongodb://localhost:27020', dbName:'store'})
+        if (!instance) {
+            instance = new MongoDB({
+                url: 'mongodb://store-mongo-db-service:27017',
+                dbName: 'store'
+            })
         }
         return instance;
     }

@@ -13,8 +13,7 @@ class OfferDA {
         return new Observable(observer => {
             mongoDB = require('../../tools/MongoDB').singleton();
             observer.next('creando la instancia de mongo');
-            observer.next('-$$$$$$$$$$$$$$$$$   catalogDA sttarted $$$$$$$$$$$$$$$$$$$$$$$$');
-            console.log('############################');
+            observer.next('-$$$$$$$$$$$$$$$$$   catalogDA sttarted $$$$$$$$$$$$$$$$$');
             observer.complete();
         })
     }

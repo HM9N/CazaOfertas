@@ -14,6 +14,8 @@ class MongoDB {
     }
 
     start$() {
+        console.log(`------------ Connecting to Mongo host ==> ${this.url}`);
+
         return bindNodeCallback(MongoClient.connect)(this.url,
             {
                 // retry to connect for 60 times

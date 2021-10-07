@@ -7,22 +7,10 @@ import { of } from 'rxjs';
 
 const query: IResolvers = {
     Query: {
-        pricesWithArgs(root, args, context) {
-            const requestType = 'MS-CATALOG-MNG_QUERY_GET-PRICES-TEST-FN-WITH-ARGS';
+        searchProduct(root, args, context) {
+
+            const requestType = 'MS-CATALOG-MNG_QUERY_SEARCH_PRODUCT';
             const requestBody = buildRequestForMqtt('CATALOG', requestType, args);
-
-            return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
-                map((mqttMsg) => mqttMsg.data),
-                // timeout(1000)
-            )
-                .toPromise()
-
-        },
-        findCarById(root, args, context) {
-
-            const requestType = 'MS-CATALOG-MNG_FIND_ONE_CAR_BY_ID';
-            const requestBody = buildRequestForMqtt('CAR', requestType, args);
-
             return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
                 map((mqttMsg) => mqttMsg.data)
             ).toPromise()
@@ -47,22 +35,46 @@ const query: IResolvers = {
         }
     },
     Mutation: {
-        mutationTest(root, args, context) {
-            return of({
-                code: 200,
-                result: JSON.stringify(args)
-            }).toPromise()
-        },
-        createCar(root, args, context) {
-
-            const requestType = "MS-TEST-CREATE-CAR";
-            const requestBody = buildRequestForMqtt("CAR", requestType, args);
+        createProduct(root, args, context) {
+            const requestType = "MS-CATALOG-MNG_MUTATION_CREATE_PRODUCT";
+            const requestBody = buildRequestForMqtt("CATALOG", requestType, args);
 
             return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
-                // tap(res => console.log(res))
-                map(res => res.data)
+                tap(res => console.log(res))
+               // map(res => res.data)
             ).toPromise();
         },
+        editProduct(root, args, context) {
+            const requestType = "MS-CATALOG-MNG_MUTATION_EDIT_PRODUCT";
+            const requestBody = buildRequestForMqtt("CATALOG", requestType, args);
+
+            return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
+                tap(res => console.log(res))
+               // map(res => res.data)
+            ).toPromise();
+        },
+        deleteProduct(root, args, context) {
+            const requestType = "MS-CATALOG-MNG_MUTATION_DELETE_PRODUCT";
+            const requestBody = buildRequestForMqtt("CATALOG", requestType, args);
+
+            return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
+<<<<<<< HEAD
+                tap(res => console.log(res))
+               // map(res => res.data)
+=======
+                map(res => res.data)
+>>>>>>> fb92d8babfed4ab5783193e0d9bd2ed353dcbb7e
+            ).toPromise();
+        },
+        createCatalog(root, args, context) {
+            const requestType = "MS-CATALOG-MNG_MUTATION_CREATE_CATALOG";
+            const requestBody = buildRequestForMqtt("CATALOG", requestType, args);
+
+            return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
+                tap(res => console.log(res))
+               // map(res => res.data)
+            ).toPromise();
+        }
     }
 }
 
