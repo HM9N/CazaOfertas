@@ -132,7 +132,7 @@ class RequestHandlerCatalogDomain {
     }
 
     createProduct$(product) {
-        const collection = this.getCollection("ms-catalog-mng", "product");
+        const collection = this.getCollection("ms-catalog-mng", "products");
         return defer(() => collection.insertOne(product)).pipe(
             map(r => r.result)
         )
@@ -173,7 +173,7 @@ class RequestHandlerCatalogDomain {
     }
 
     updateProductState$(productId, newState) {
-        const collection = this.getCollection("ms-catalog-mng", "product");
+        const collection = this.getCollection("ms-catalog-mng", "producst");
 
         const query = { _id: productId };
         const update = { $set: { state: newState } }
@@ -185,7 +185,7 @@ class RequestHandlerCatalogDomain {
 
     listProducts$(keyword, pagination, jwt) {
 
-        const collection = this.getCollection("ms-catalog-mng", "product");
+        const collection = this.getCollection("ms-catalog-mng", "products");
 
         const query = {};
         const { page, size } = pagination;
