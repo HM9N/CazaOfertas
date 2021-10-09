@@ -40,8 +40,8 @@ const query: IResolvers = {
             const requestBody = buildRequestForMqtt("CATALOG", requestType, args);
 
             return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
-                tap(res => console.log(res))
-               // map(res => res.data)
+                tap(res => console.log(res)),
+                map(res => res.data)
             ).toPromise();
         },
         editProduct(root, args, context) {
@@ -49,8 +49,8 @@ const query: IResolvers = {
             const requestBody = buildRequestForMqtt("CATALOG", requestType, args);
 
             return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
-                tap(res => console.log(res))
-               // map(res => res.data)
+                tap(res => console.log(res)),
+                map(res => res.data)
             ).toPromise();
         },
         deleteProduct(root, args, context) {
@@ -58,8 +58,8 @@ const query: IResolvers = {
             const requestBody = buildRequestForMqtt("CATALOG", requestType, args);
 
             return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
-                tap(res => console.log(res))
-               // map(res => res.data)
+                tap(res => console.log(res)),
+                map(res => res.data)
             ).toPromise();
         },
         createCatalog(root, args, context) {
@@ -67,8 +67,8 @@ const query: IResolvers = {
             const requestBody = buildRequestForMqtt("CATALOG", requestType, args);
 
             return mqttInstance.publishAndGetResponse$('requests', requestBody).pipe(
-                tap(res => console.log(res))
-               // map(res => res.data)
+                tap(res => console.log(res)),
+                map(res => res.data)
             ).toPromise();
         }
     }

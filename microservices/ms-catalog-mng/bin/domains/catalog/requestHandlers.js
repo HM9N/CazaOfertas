@@ -133,8 +133,17 @@ class RequestHandlerCatalogDomain {
 
     createProduct$(product) {
         const collection = this.getCollection("ms-catalog-mng", "products");
-        return defer(() => collection.insertOne(product)).pipe(
-            map(r => r.result)
+        const productToInsert = product.productInput;
+        productToInsert._id = uuidV4();
+        return defer(() => collection.insertOne(productToInsert)).pipe(
+            map(r => r.result),
+            mergeMap((res) => {
+                console.log("RESULTADO DE MONGO", res);
+                return of({
+                    code: 200,
+                    result: "¡Se ha registrado éxitosamente el producto!" + JSON.stringify(res)
+                });
+            })
         )
     }
 
@@ -145,7 +154,33 @@ class RequestHandlerCatalogDomain {
         console.log(catalogToInsert);
         catalogToInsert._id = uuidV4();
         return defer(() => collection.insertOne(catalogToInsert)).pipe(
-            map(r => r.result)
+            map(r => r.result),
+            mergeMap((res) => {
+                console.log("RESULTADO DE MONGO", res);
+                return of({
+                    code: 200,
+                    result: "¡Se ha registrado éxitosamente el catalogo!" + JSON.stringify(res)
+                });
+            })
+        )
+    }
+
+    updateProduct$(product) {
+        const { ref } =  product.productInput;
+        const collection = this.getCollection("ms-catalog-mng", "products");
+        const producToUpdate = product.productInput.ref;
+        const query = { ref: ref };
+        const update = { $set: { ...producToUpdate } }
+
+        return defer(() => collection.updateOne(query, update)).pipe(
+            map(r => r.result),
+            mergeMap((res) => {
+                console.log("RESULTADO DE MONGO", res);
+                return of({
+                    code: 200,
+                    result: "¡Se ha actualizado éxitosamente el producto!" + JSON.stringify(res)
+                });
+            })
         )
     }
 
@@ -156,19 +191,14 @@ class RequestHandlerCatalogDomain {
 
         const collection = this.getCollection("ms-catalog-mng", "products");
         return defer(() => collection.deleteOne({ ref: productRef })).pipe(
-            tap(doc => console.log(doc))
-        )
-    }
-
-    updateProduct$(product) {
-        const { ref } =  product.productInput;
-        const collection = this.getCollection("ms-catalog-mng", "products");
-        const producToUpdate = product.productInput;
-        const query = { ref: ref };
-        const update = { $set: { ...producToUpdate } }
-
-        return defer(() => collection.updateOne(query, update)).pipe(
-            tap(r => console.log(r))
+            map(r => r.result),
+            mergeMap((res) => {
+                console.log("RESULTADO DE MONGO", res);
+                return of({
+                    code: 200,
+                    result: "¡Se ha eliminado éxitosamente el producto!" + JSON.stringify(res)
+                });
+            })
         )
     }
 
